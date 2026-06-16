@@ -24,3 +24,6 @@ jobs:
 
       - name: Smoke check (app imports cleanly)
         run: python -c "import main; print('App imports OK')"
+
+      - name: Build Docker image
+        run: docker build -t url-shortener .
