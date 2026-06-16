@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -25,5 +29,16 @@ jobs:
       - name: Smoke check (app imports cleanly)
         run: python -c "import main; print('App imports OK')"
 
-      - name: Build Docker image
-        run: docker build -t url-shortener .
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/husseyrfn123-ui/url-shortener:${{ github.ref_name }}
